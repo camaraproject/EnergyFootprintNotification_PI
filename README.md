@@ -1,12 +1,13 @@
 # Energy Footprint Notification API - Provider Implementation
 
-This repository contains the Provider Implementatin for the Energy Footprint Notification API. This is a possible implementation of the Transformation Function for the Energy Footprint Notification API.
+This repository contains the Provider Implementation for the Energy Footprint Notification API. This is a possible implementation of the Transformation Function for the Energy Footprint Notification API.
+The Provider Implementation is compliant with [r1.3](https://github.com/camaraproject/EnergyFootprintNotification/releases/tag/r1.3) of the Energy Footprint Notification API.
 
 ## Energy Footprint Notification API - Description
 
 This document outlines the implementation details for the Energy Footprint Notification API.
 
-The specificatin of the API is here: https://github.com/camaraproject/EnergyFootprintNotification
+The specification of the API is here: https://github.com/camaraproject/EnergyFootprintNotification
 
 The Transformation Function performs the following tasks:
 
@@ -34,7 +35,7 @@ The Energy Footprint Notification API supports the following intents:
   - Intent1: Which is the overall energy consumption for my service in this period of time?
   - Intent2: Which is the overall carbon footprint for my service in this period of time?
 
-To support the above intents two enpoints are provided:
+To support the above intents two endpoints are provided:
 
   - **calculate-energy-consumption:** Provides to the API Consumer the requested information about the energy
     consumption for the target service, considering all the active instances, in the period of time of interest
