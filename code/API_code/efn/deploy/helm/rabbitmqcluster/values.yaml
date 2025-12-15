@@ -1,0 +1,41 @@
+# Default values for rabbitmqcluster chart.
+# Namespace: The chart will deploy resources into the release namespace.
+
+rabbitmq:
+  cluster:
+    name: my-rabbit
+    replicas: 1
+    # If empty, uses release namespace
+    namespaceOverride: ""
+    # Additional RabbitMQ configuration (merged into rabbitmq.additionalConfig)
+    additionalConfig: |
+      # Example: tune max ports
+      # ERL_MAX_PORTS=4096
+      # Add any rabbitmq.conf style lines below (will be placed under additionalConfig)
+    # VHost to set as default (optional). If provided sets default_vhost = value
+    defaultVhost: 
+  persistence:
+    enabled: true
+    storageClass: ""
+    size: 10Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+# List of additional queues to create referencing the cluster.
+# Eventing RabbitMQ will create its own internal queues for Brokers/Triggers; only define business/application queues here.
+queues:
+  - name: demo-queue
+    vhost: "/"           # optional vhost
+    durable: true          # RabbitMQ queue durability
+    autoDelete: false      # Auto delete when unused
+    type: quorum           # quorum or classic (operator supports policy management; use 'classic' for ephemeral dev)
+    arguments: {}          # Additional queue arguments (x-message-ttl, etc.)
+    labels: {}             # Extra labels added to the Queue CR
+
+# Toggle creation of queues list
+createQueues: true

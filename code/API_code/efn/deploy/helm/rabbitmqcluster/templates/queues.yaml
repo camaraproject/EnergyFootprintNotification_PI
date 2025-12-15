@@ -1,0 +1,39 @@
+{{- if and .Values.createQueues .Values.queues }}
+{{- range $q := .Values.queues }}
+apiVersion: rabbitmq.com/v1beta1
+kind: Queue
+metadata:
+  name: {{ $q.name }}
+  namespace: {{ default $.Release.Namespace $.Values.rabbitmq.cluster.namespaceOverride }}
+  labels:
+    app.kubernetes.io/name: rabbitmq-queue
+    app.kubernetes.io/component: queue
+    {{- range $k, $v := $q.labels }}
+    {{ $k }}: {{ $v | quote }}
+    {{- end }}
+spec:
+  name: {{ $q.name }}
+  rabbitmqClusterReference:
+    name: {{ $.Values.rabbitmq.cluster.name }}
+    namespace: {{ default $.Release.Namespace $.Values.rabbitmq.cluster.namespaceOverride }}
+  {{- if $q.vhost }}
+  vhost: {{ $q.vhost }}
+  {{- end }}
+  {{- if $q.durable }}
+  durable: {{ $q.durable }}
+  {{- end }}
+  {{- if hasKey $q "autoDelete" }}
+  autoDelete: {{ $q.autoDelete }}
+  {{- end }}
+  {{- if $q.type }}
+  type: {{ $q.type }}
+  {{- end }}
+  {{- if $q.arguments }}
+  arguments:
+    {{- range $ak, $av := $q.arguments }}
+    {{ $ak }}: {{ $av | quote }}
+    {{- end }}
+  {{- end }}
+---
+{{- end }}
+{{- end }}

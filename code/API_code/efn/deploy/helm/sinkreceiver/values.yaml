@@ -1,0 +1,9 @@
+image:
+  tag: pr-11
+logger:
+  level: debug
+  format: development
+
+# Expected result value for validation counter
+# Counts how many responses match this exact value
+expectedResultValue: "0.0044"
