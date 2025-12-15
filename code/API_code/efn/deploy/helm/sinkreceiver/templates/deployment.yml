@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sinkreceiver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sinkreceiver
+  template:
+    metadata:
+      labels:
+        app: sinkreceiver
+    spec:
+      imagePullSecrets:
+        - name: ghcr-pull
+      containers:
+      - name: sinkreceiver
+        image: "ghcr.io/your_repository/camara-efn-api/sinkreceiver:{{ .Values.image.tag }}"
+        imagePullPolicy: Always
+        env:
+          - name: PORT
+            value: "8090"
+          - name: LOG_LEVEL
+            value: {{ .Values.logger.level }}
+          - name: LOG_FORMAT
+            value: {{ .Values.logger.format }}
+          - name: EXPECTED_RESULT_VALUE
+            value: {{ .Values.expectedResultValue | quote }}
+        ports:
+          - name: http
+            containerPort: 8090
+      - name: tls-proxy
+        image: nginx:1.25-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+          - name: https
+            containerPort: 8443
+        readinessProbe:
+          tcpSocket:
+            port: https
+          initialDelaySeconds: 2
+          periodSeconds: 5
+        args:
+          - nginx
+          - -g
+          - daemon off;
+        volumeMounts:
+          - name: tls-secret
+            mountPath: /etc/tls
+            readOnly: true
+          - name: nginx-config
+            mountPath: /etc/nginx/conf.d
+            readOnly: true
+      volumes:
+        - name: tls-secret
+          secret:
+            secretName: sinkreceiver-tls
+        - name: nginx-config
+          configMap:
+            name: sinkreceiver-nginx
+
+
+

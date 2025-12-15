@@ -15,13 +15,13 @@ The Transformation Function performs the following tasks:
   - The public IP address exposed by the application
   - The identifiers for the instances of the Network Elements (e.g. UPF) supporting the service (traversed by the traffic flow to and from the application)
   - The vendor of the Network Elements
-  - The infrastructure type supporting the Network Elements 
+  - The infrastructure type supporting the Network Elements
   - The infrastructure type supporting the application
 3) calculates the percentage of the traffic flow in each Network Element that is related to the service under observation
 4) calculates the overall energy consumption of the involved Network Elements
 5) Makes a proportion to estimate the energy consumption for the service
 6) Calculates the energy consumption for the applications
-7) Estimates the E2E energy consumption 
+7) Estimates the E2E energy consumption
 
 ### Implemented Version
 
@@ -44,5 +44,4 @@ To support the above intents two enpoints are provided:
 
 ## How to run service locally
 
-TBD
-
+For architecture details, full setup and deployment instructions, see [docs/README.md](code/API_code/efn/docs/README.md).

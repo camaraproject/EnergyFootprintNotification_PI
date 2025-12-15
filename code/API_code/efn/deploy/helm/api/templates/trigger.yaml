@@ -1,0 +1,147 @@
+apiVersion: eventing.knative.dev/v1
+kind: Trigger
+metadata:
+  name: efn-requested
+  namespace: {{ .Values.knative.namespace }}
+  {{- if .Values.knative.triggers.gatherInfoRequested.parallelism }}
+  annotations:
+    rabbitmq.eventing.knative.dev/parallelism: {{ .Values.knative.triggers.gatherInfoRequested.parallelism | quote }}
+  {{- end }}
+spec:
+  broker: {{ .Values.knative.broker.name }}
+  filter:
+    attributes:
+      type: it.tim.efn.gatherinfo.requested
+      source: urn:tim:efn-api
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: worker
+---
+apiVersion: eventing.knative.dev/v1
+kind: Trigger
+metadata:
+  name: worker-app-consumption-requested
+  namespace: {{ .Values.knative.namespace }}
+  {{- if .Values.knative.triggers.appConsumptionRequested.parallelism }}
+  annotations:
+    rabbitmq.eventing.knative.dev/parallelism: {{ .Values.knative.triggers.appConsumptionRequested.parallelism | quote }}
+  {{- end }}
+spec:
+  broker: {{ .Values.knative.broker.name }}
+  filter:
+    attributes:
+      type: it.tim.efn.app.consumption.requested
+      source: urn:tim:efn-worker
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: worker
+---
+apiVersion: eventing.knative.dev/v1
+kind: Trigger
+metadata:
+  name: worker-network-element-energy-requested
+  namespace: {{ .Values.knative.namespace }}
+  {{- if .Values.knative.triggers.networkElementEnergyRequested.parallelism }}
+  annotations:
+    rabbitmq.eventing.knative.dev/parallelism: {{ .Values.knative.triggers.networkElementEnergyRequested.parallelism | quote }}
+  {{- end }}
+spec:
+  broker: {{ .Values.knative.broker.name }}
+  filter:
+    attributes:
+      type: it.tim.efn.networkelement.energy.requested
+      source: urn:tim:efn-worker
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: worker
+---
+apiVersion: eventing.knative.dev/v1
+kind: Trigger
+metadata:
+  name: worker-network-element-traffic-requested
+  namespace: {{ .Values.knative.namespace }}
+  {{- if .Values.knative.triggers.networkElementTrafficRequested.parallelism }}
+  annotations:
+    rabbitmq.eventing.knative.dev/parallelism: {{ .Values.knative.triggers.networkElementTrafficRequested.parallelism | quote }}
+  {{- end }}
+spec:
+  broker: {{ .Values.knative.broker.name }}
+  filter:
+    attributes:
+      type: it.tim.efn.networkelement.traffic.requested
+      source: urn:tim:efn-worker
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: worker
+---
+apiVersion: eventing.knative.dev/v1
+kind: Trigger
+metadata:
+  name: worker-calculation-requested
+  namespace: {{ .Values.knative.namespace }}
+  {{- if .Values.knative.triggers.calculationRequested.parallelism }}
+  annotations:
+    rabbitmq.eventing.knative.dev/parallelism: {{ .Values.knative.triggers.calculationRequested.parallelism | quote }}
+  {{- end }}
+spec:
+  broker: {{ .Values.knative.broker.name }}
+  filter:
+    attributes:
+      type: it.tim.efn.calculation.requested
+      source: urn:tim:efn-worker
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: worker
+---
+apiVersion: eventing.knative.dev/v1
+kind: Trigger
+metadata:
+  name: notification-requested
+  namespace: {{ .Values.knative.namespace }}
+  {{- if .Values.knative.triggers.notificationRequested.parallelism }}
+  annotations:
+    rabbitmq.eventing.knative.dev/parallelism: {{ .Values.knative.triggers.notificationRequested.parallelism | quote }}
+  {{- end }}
+spec:
+  broker: {{ .Values.knative.broker.name }}
+  filter:
+    attributes:
+      type: it.tim.efn.notification.requested
+      source: urn:tim:efn-worker
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: notification
+---
+apiVersion: eventing.knative.dev/v1
+kind: Trigger
+metadata:
+  name: notification-error-requested
+  namespace: {{ .Values.knative.namespace }}
+  {{- if .Values.knative.triggers.notificationRequested.parallelism }}
+  annotations:
+    rabbitmq.eventing.knative.dev/parallelism: {{ .Values.knative.triggers.notificationRequested.parallelism | quote }}
+  {{- end }}
+spec:
+  broker: {{ .Values.knative.broker.name }}
+  filter:
+    attributes:
+      type: it.tim.efn.notification.error.requested
+      source: urn:tim:efn-worker
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: notification
+

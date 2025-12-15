@@ -1,0 +1,12 @@
+apiVersion: v2
+name: rabbitmqcluster
+description: Helm chart to deploy a RabbitMQ Cluster CR and optional Queues for the energy-footprint notification topology.
+version: 0.1.0
+appVersion: "1.0.0"
+type: application
+keywords:
+  - rabbitmq
+  - knative
+  - eventing
+home: https://github.com/camaraproject/EnergyFootprintNotification_PI/code/API_code/efn
+dependencies: []
