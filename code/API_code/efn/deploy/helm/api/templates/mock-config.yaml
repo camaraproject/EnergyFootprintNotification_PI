@@ -1,0 +1,30 @@
+{{- if .Values.mock.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: efn-mock-config
+  namespace: {{ .Values.knative.namespace }}
+  labels:
+    app: energy-footprint-notification
+    component: mock-config
+data:
+  # Client type configuration - set to "configurable" to enable mock clients
+  CLIENT_TYPE: "configurable"
+  TRAFFIC_CLIENT_TYPE: "configurable"
+
+  # Cloud Observability Mock Client Settings
+  CLOUDOBS_CONFIG_APP_VALUE: {{ .Values.mock.cloudObservability.appValue | quote }}
+  CLOUDOBS_CONFIG_NE_VALUE: {{ .Values.mock.cloudObservability.neValue | quote }}
+  CLOUDOBS_CONFIG_SUCCESS_COUNT: {{ .Values.mock.cloudObservability.successCount | quote }}
+  CLOUDOBS_CONFIG_ERROR_COUNT: {{ .Values.mock.cloudObservability.errorCount | quote }}
+  CLOUDOBS_CONFIG_ERROR_TYPE: {{ .Values.mock.cloudObservability.errorType | quote }}
+  CLOUDOBS_CONFIG_DELAY_MS: {{ .Values.mock.cloudObservability.delayMS | quote }}
+
+  # Traffic Volume Mock Client Settings
+  TRAFFIC_CONFIG_IP_VOLUME: {{ .Values.mock.trafficVolume.ipVolume | quote }}
+  TRAFFIC_CONFIG_ALL_VOLUME: {{ .Values.mock.trafficVolume.allVolume | quote }}
+  TRAFFIC_CONFIG_SUCCESS_COUNT: {{ .Values.mock.trafficVolume.successCount | quote }}
+  TRAFFIC_CONFIG_ERROR_COUNT: {{ .Values.mock.trafficVolume.errorCount | quote }}
+  TRAFFIC_CONFIG_ERROR_TYPE: {{ .Values.mock.trafficVolume.errorType | quote }}
+  TRAFFIC_CONFIG_DELAY_MS: {{ .Values.mock.trafficVolume.delayMS | quote }}
+{{- end }}

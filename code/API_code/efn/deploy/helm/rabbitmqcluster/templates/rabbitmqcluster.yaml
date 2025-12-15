@@ -1,0 +1,39 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: {{ .Values.rabbitmq.cluster.name }}
+  namespace: {{ default .Release.Namespace .Values.rabbitmq.cluster.namespaceOverride }}
+  labels:
+    app.kubernetes.io/name: rabbitmq
+    app.kubernetes.io/component: broker
+spec:
+  replicas: {{ .Values.rabbitmq.cluster.replicas }}
+  rabbitmq:
+    additionalConfig: |
+      {{- if .Values.rabbitmq.cluster.defaultVhost }}default_vhost = {{ .Values.rabbitmq.cluster.defaultVhost }}{{ end }}
+      {{- with .Values.rabbitmq.cluster.additionalConfig }}
+{{ . | trim | indent 6 }}
+      {{- end }}
+  persistence:
+    {{- if .Values.rabbitmq.persistence.enabled }}
+    storage: {{ .Values.rabbitmq.persistence.size }}
+    {{- if .Values.rabbitmq.persistence.storageClass }}
+    storageClassName: {{ .Values.rabbitmq.persistence.storageClass }}
+    {{- end }}
+    {{- else }}
+    # persistence disabled
+    {{- end }}
+  override:
+    statefulSet:
+      spec:
+        template:
+          spec:
+            containers:
+            - name: rabbitmq
+              resources:
+                requests:
+                  cpu: {{ .Values.rabbitmq.resources.requests.cpu }}
+                  memory: {{ .Values.rabbitmq.resources.requests.memory }}
+                limits:
+                  cpu: {{ .Values.rabbitmq.resources.limits.cpu }}
+                  memory: {{ .Values.rabbitmq.resources.limits.memory }}

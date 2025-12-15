@@ -1,0 +1,134 @@
+# Default values for api.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  repository: ghcr.io/your_repository/camara-efn-api
+  # This sets the pull policy for images.
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "0.0.3"
+
+# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+
+knative:
+  broker:
+    name: rabbitmq-broker
+    class: RabbitMQBroker
+    delivery:
+      retry: 3
+      backoffPolicy: exponential
+      backoffDelay: PT1S
+      deadLetterPath: /dlq
+  # Namespace where Knative services will be deployed, not where knative is installed
+  namespace: demo
+  # Per-trigger parallelism for RabbitMQ. When set >1 each Trigger creates N workers.
+  # Set to 1 to preserve ordering, increase for higher throughput.
+  triggers:
+    gatherInfoRequested:
+      parallelism: 100
+    appConsumptionRequested:
+      parallelism: 100
+    networkElementEnergyRequested:
+      parallelism: 100
+    networkElementTrafficRequested:
+      parallelism: 100
+    calculationRequested:
+      parallelism: 100
+    notificationRequested:
+      parallelism: 100
+  # Per-service autoscaling configuration
+  services:
+    api:
+      minScale: 1
+      maxScale: 3
+      target: 1
+      metric: concurrency
+    worker:
+      minScale: 1
+      maxScale: 16
+      target: 1
+      metric: concurrency
+      scaleDownDelay: 30s
+    notification:
+      minScale: 1
+      maxScale: 3
+      target: 1
+      metric: concurrency
+  rabbitmq:
+    brokerConfig:
+      name: rabbitmq-broker-config
+      # Queue type for Broker resources: quorum or classic (defaults quorum if omitted)
+      queueType: quorum
+      cluster:
+        name: my-rabbit
+        # Optional namespace override for the RabbitmqCluster (defaults to knative.namespace when empty)
+        namespace: ""
+api:
+  # Maximum allowed time period in days for historical data queries
+  maxTimePeriodDays: 730  # 2 years
+
+logger:
+  level: debug
+  format: development
+pdp:
+  address: "cerbos.demo.svc.cluster.local:3593"
+  # When 'skip' is true, all authorization checks are bypassed.
+  # NOTE: This configuration is intended for testing environments,
+  # not for production use.
+  skip: false
+database:
+  name: efn
+  # MongoDB connection, remember to change the password 'CHANGEME'
+  uri: "mongodb://root:CHANGEME@mongo-mongodb.data.svc.cluster.local:27017"
+
+# HTTP client configuration
+http:
+  # When set to true, TLS certificate verification is skipped for internal cluster services (*.svc.cluster.local).
+  # Useful for development/testing with self-signed certificates.
+  # Set to false for production to enforce certificate validation.
+  insecureSkipVerify: false
+
+# Cloud Observability failure injection for NE energy consumption retrieval.
+# When set to true the worker uses the error dummy client and forces NE retrieval failures
+# to exercise retry & DLQ logic.
+cloudObservability:
+  failThrottle: false
+  failNE: false
+
+# Calculator configuration
+calculator:
+  # CO2 conversion factor in tCO2e per kWh (default 0.00035)
+  carbonFactorTCO2ePerKWh: 0.00035
+
+# Mock/Dummy Client Configuration
+# IMPORTANT: These settings configure mock implementations that DO NOT connect to real services.
+# They are used for testing, development, and demonstration purposes only.
+# Enable by setting mock.enabled: true and configuring the mock behavior below.
+mock:
+  enabled: false  # Set to true to enable mock/dummy clients instead of real service connections
+
+  # Cloud Observability Mock Client Configuration
+  # These settings control the behavior of the dummy CloudObservability client.
+  # The mock client returns configurable values without making any external API calls.
+  cloudObservability:
+    appValue: "0.0020"           # Mock app energy consumption value (kWh)
+    neValue: "0.0010"            # Mock NE energy consumption value (kWh)
+    successCount: "0"            # Number of successful requests before errors start (0 = unlimited)
+    errorCount: "0"              # Number of errors to return after success count (0 = no errors)
+    errorType: "throttling"      # Error type: "permanent" or "throttling"
+    delayMS: "0"                 # Simulated request processing delay in milliseconds (0 = no delay)
+
+  # Traffic Volume Mock Client Configuration
+  # These settings control the behavior of the dummy TrafficVolume client.
+  # The mock client returns configurable values without making any external API calls.
+  trafficVolume:
+    ipVolume: "100.0"            # Mock app instance IP traffic volume in Mbps
+    allVolume: "1000.0"          # Mock total NE traffic volume in Mbps
+    successCount: "0"            # Number of successful requests before errors start (0 = unlimited)
+    errorCount: "0"              # Number of errors to return after success count (0 = no errors)
+    errorType: "throttling"      # Error type: "permanent" or "throttling"
+    delayMS: "0"                 # Simulated request processing delay in milliseconds (0 = no delay)
+
